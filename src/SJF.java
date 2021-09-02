@@ -55,7 +55,7 @@ public class SJF implements Algorithm
     public Process pickNextProcess() {
         Process nextProcess = readyQueue.get(0);
         for (Process p : readyQueue) {
-            if (p.getArrivalTime() < nextProcess.getArrivalTime()) {
+            if (p.getCPUBurstTime() < nextProcess.getCPUBurstTime()) {
                 nextProcess = p;
             }
         }

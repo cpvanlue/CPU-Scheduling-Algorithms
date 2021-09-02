@@ -22,9 +22,7 @@ public class FCFS implements Algorithm
         readyQueue = new LinkedList<>();
         processesToSchedule = new LinkedList<>();
         totalNumProcesses = allProcessList.size();
-        for(Process p: allProcessList){
-            processesToSchedule.add(p);
-        }
+        processesToSchedule.addAll(allProcessList);
     }
 
     public void schedule() {

@@ -53,13 +53,18 @@ public class SJF implements Algorithm
     }
 
     public Process pickNextProcess() {
-        Process nextProcess = readyQueue.get(0);
-        for (Process p : readyQueue) {
-            if (p.getCPUBurstTime() < nextProcess.getCPUBurstTime()) {
-                nextProcess = p;
-            }
-        }
+        Process nextProcess = readyQueue.stream().min(Comparator.comparing(Process::getCPUBurstTime)).orElseThrow(NoSuchElementException::new);
         readyQueue.remove(nextProcess);
         return nextProcess;
+
+//        Alternate (initial) solution:
+//        Process nextProcess = readyQueue.get(0);
+//        for (Process p : readyQueue) {
+//            if (p.getCPUBurstTime() < nextProcess.getCPUBurstTime()) {
+//                nextProcess = p;
+//            }
+//        }
+//        readyQueue.remove(nextProcess);
+//        return nextProcess;
     }
 }

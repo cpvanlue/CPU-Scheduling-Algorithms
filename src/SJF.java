@@ -19,6 +19,7 @@ public class SJF implements Algorithm
     }
 
     public void schedule() {
+        System.out.println("Shortest-Job First scheduling");
         int totalWaitingTime = 0;
         Process currentProcess;
         Process p = processesToSchedule.remove();

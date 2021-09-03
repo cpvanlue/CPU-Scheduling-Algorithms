@@ -10,7 +10,7 @@ public class RR implements Algorithm
     private final Queue<Process> readyQueue;
     private final Queue<Process> processesToSchedule;
     private final HashMap<String, Integer> originalBursts;
-    private final int totalNumProcesses;
+    private int totalNumProcesses;
     private final int timeQuantum = 5;
 
     public RR(List<Process> allProcessList) {
@@ -23,7 +23,7 @@ public class RR implements Algorithm
 
     public void schedule() {
         System.out.println("Round Robin scheduling");
-        int totalWaitingTime;
+        int totalWaitingTime = 0;
         Process currentProcess;
         Process p = processesToSchedule.remove();
         if (CPU.getCurrentTime() < p.getArrivalTime()) {
@@ -33,6 +33,7 @@ public class RR implements Algorithm
         while (!readyQueue.isEmpty()) {
             currentProcess = pickNextProcess();
             if (!originalBursts.containsKey(currentProcess.getName())) {
+                totalNumProcesses++;
                 originalBursts.put(currentProcess.getName(), currentProcess.getCPUBurstTime());
             }
             CPU.run(currentProcess, Math.min(currentProcess.getCPUBurstTime(), timeQuantum));
@@ -42,6 +43,8 @@ public class RR implements Algorithm
                     readyQueue.add(q);
                 }
             }
+            int waitingTime = CPU.getCurrentTime() - currentProcess.getArrivalTime() - originalBursts.get(currentProcess.getName());
+            totalWaitingTime += waitingTime;
             processesToSchedule.removeAll(readyQueue);
             if (currentProcess.getCPUBurstTime() <= 0) {
                 System.out.println(currentProcess.getName() + " has finished at time " + CPU.getCurrentTime() + " with a waiting time of " +
@@ -50,6 +53,7 @@ public class RR implements Algorithm
                 readyQueue.add(currentProcess);
             }
         }
+        System.out.printf("The average waiting time is %.2f", (double) totalWaitingTime / totalNumProcesses);
     }
 
     public Process pickNextProcess() {

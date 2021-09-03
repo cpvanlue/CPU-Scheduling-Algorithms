@@ -9,18 +9,21 @@ public class RR implements Algorithm
 {
     private final Queue<Process> readyQueue;
     private final Queue<Process> processesToSchedule;
+    private final HashMap<String, Integer> originalBursts;
     private final int totalNumProcesses;
     private final int timeQuantum = 5;
 
     public RR(List<Process> allProcessList) {
         readyQueue = new LinkedList<>();
         processesToSchedule = new LinkedList<>();
+        originalBursts = new HashMap<>();
         totalNumProcesses = allProcessList.size();
         processesToSchedule.addAll(allProcessList);
     }
 
     public void schedule() {
         System.out.println("Round Robin scheduling");
+        int totalWaitingTime;
         Process currentProcess;
         Process p = processesToSchedule.remove();
         if (CPU.getCurrentTime() < p.getArrivalTime()) {
@@ -29,11 +32,11 @@ public class RR implements Algorithm
         readyQueue.add(p);
         while (!readyQueue.isEmpty()) {
             currentProcess = pickNextProcess();
-            if (currentProcess.getCPUBurstTime() < timeQuantum) {
-                CPU.run(currentProcess, currentProcess.getCPUBurstTime());
-            } else {
-                CPU.run(currentProcess, timeQuantum);
-            } currentProcess.setBurst(currentProcess.getCPUBurstTime() - timeQuantum);
+            if (!originalBursts.containsKey(currentProcess.getName())) {
+                originalBursts.put(currentProcess.getName(), currentProcess.getCPUBurstTime());
+            }
+            CPU.run(currentProcess, Math.min(currentProcess.getCPUBurstTime(), timeQuantum));
+            currentProcess.setBurst(currentProcess.getCPUBurstTime() - timeQuantum);
             for (Process q : processesToSchedule) {
                 if (CPU.getCurrentTime() > q.getArrivalTime()) {
                     readyQueue.add(q);
@@ -41,7 +44,8 @@ public class RR implements Algorithm
             }
             processesToSchedule.removeAll(readyQueue);
             if (currentProcess.getCPUBurstTime() <= 0) {
-                System.out.println(currentProcess.getName() + " has finished at time " + CPU.getCurrentTime());
+                System.out.println(currentProcess.getName() + " has finished at time " + CPU.getCurrentTime() + " with a waiting time of " +
+                        (CPU.getCurrentTime() - currentProcess.getArrivalTime() - originalBursts.get(currentProcess.getName())));
             } else {
                 readyQueue.add(currentProcess);
             }

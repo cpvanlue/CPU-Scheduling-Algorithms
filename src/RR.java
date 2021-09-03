@@ -11,7 +11,6 @@ public class RR implements Algorithm
     private final Queue<Process> processesToSchedule;
     private final HashMap<String, Integer> originalBursts;
     private int totalNumProcesses;
-    private final int timeQuantum = 5;
 
     public RR(List<Process> allProcessList) {
         readyQueue = new LinkedList<>();
@@ -35,6 +34,7 @@ public class RR implements Algorithm
             if (!originalBursts.containsKey(currentProcess.getName())) {
                 originalBursts.put(currentProcess.getName(), currentProcess.getCPUBurstTime());
             }
+            int timeQuantum = 10;
             CPU.run(currentProcess, Math.min(currentProcess.getCPUBurstTime(), timeQuantum));
             currentProcess.setBurst(currentProcess.getCPUBurstTime() - timeQuantum);
             for (Process q : processesToSchedule) {

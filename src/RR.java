@@ -11,7 +11,7 @@ public class RR implements Algorithm
     private final Queue<Process> processesToSchedule;
     private final HashMap<String, Integer> originalBursts;
     private int totalNumProcesses;
-    private final int timeQuantum = 5;
+    private final int timeQuantum = 10;
 
     public RR(List<Process> allProcessList) {
         readyQueue = new LinkedList<>();
@@ -51,6 +51,14 @@ public class RR implements Algorithm
                         (CPU.getCurrentTime() - currentProcess.getArrivalTime() - originalBursts.get(currentProcess.getName())));
             } else {
                 readyQueue.add(currentProcess);
+            }
+            if (readyQueue.isEmpty()) {
+                for (Process r : processesToSchedule) {
+                    if (r.getArrivalTime() > CPU.getCurrentTime()) {
+                        CPU.advanceTimeTo(r.getArrivalTime());
+                        readyQueue.add(processesToSchedule.remove());
+                    } break;
+                }
             }
         }
         System.out.printf("The average waiting time is %.2f", (double) totalWaitingTime / totalNumProcesses);

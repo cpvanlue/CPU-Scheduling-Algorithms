@@ -53,7 +53,9 @@ public class SJF implements Algorithm
     }
 
     public Process pickNextProcess() {
-        Process nextProcess = readyQueue.stream().min(Comparator.comparing(Process::getCPUBurstTime)).orElseThrow(NoSuchElementException::new);
+        Process nextProcess = readyQueue.stream()
+                .min(Comparator.comparing(Process::getCPUBurstTime))
+                .orElseThrow(NoSuchElementException::new);
         readyQueue.remove(nextProcess);
         return nextProcess;
 
